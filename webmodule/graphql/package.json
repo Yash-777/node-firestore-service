@@ -1,0 +1,26 @@
+{
+  "name": "node-firestore-service-graphql",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Apollo GraphQL API exposing country master data backed by Firestore, via a dynamic database/collection configuration.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "dependencies": {
+    "@node-firestore-service/common": "*",
+    "@apollo/server": "^5.5.1",
+    "@as-integrations/express4": "^1.1.2",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "graphql": "^16.9.0",
+    "graphql-type-json": "^0.3.2"
+  }
+}

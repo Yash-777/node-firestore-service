@@ -1,0 +1,27 @@
+{
+  "name": "node-firestore-service",
+  "version": "1.0.0",
+  "description": "A practice project for learning and executing Cloud Firestore operations",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "workspaces": [
+    "common",
+    "webmodule/graphql",
+    "standalone/import-countries"
+  ],
+  "keywords": [
+    "firebase",
+    "firestore",
+    "node",
+    "nosql"
+  ],
+  "author": "Yashwanth",
+  "license": "Apache License V2.0",
+  "scripts": {
+    "start:graphql": "npm run start --workspace=webmodule/graphql",
+    "dev:graphql": "npm run dev --workspace=webmodule/graphql",
+    "import:countries": "npm run start --workspace=standalone/import-countries"
+  }
+}

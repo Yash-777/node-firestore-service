@@ -1,0 +1,141 @@
+import { createLogger } from "@node-firestore-service/common";
+import { env } from "./config/env.js";
+import {
+  loadCommonJsonFile,
+  resolveCountriesCollection,
+  clearCollection,
+  createCollection,
+  fetchAllCollection,
+  fetchAndUpdate,
+} from "./importHelpers.js";
+
+const logger = createLogger("import-countries");
+
+/**
+ * Loads the shared `AllCountries.json` reference data and resolves the
+ * Firestore db/collection to operate on (both dynamic, via env config).
+ *
+ * @returns {Promise<{
+ *   countries: Record<string, object>,
+ *   db: import("firebase-admin/firestore").Firestore,
+ *   collectionRef: import("firebase-admin/firestore").CollectionReference
+ * }>}
+ */
+async function loadCountriesAndCollection() {
+  const countriesData = await loadCommonJsonFile("AllCountries.json");
+  const { db, collectionRef } = await resolveCountriesCollection(env.firestore);
+  return { countries: countriesData.countryListItems ?? {}, db, collectionRef };
+}
+
+/**
+ * CREATE — inserts every country from `AllCountries.json` as a new
+ * Firestore document (one `createCollection` call per country).
+ *
+ * @returns {Promise<void>}
+ */
+async function createCountries() {
+  const { countries, collectionRef } = await loadCountriesAndCollection();
+  const codes = Object.keys(countries);
+  logger.info(`Creating ${codes.length} countries in ${env.firestore.collectionPath.join("/")}...`);
+
+  for (const countryCode of codes) {
+    const item = countries[countryCode];
+
+    if (!item || !item.countryCode || !item.countryName) {
+      logger.warn("Skipping invalid country item:", item);
+      continue;
+    }
+
+    await createCollection(collectionRef, countryCode, item);
+    logger.info(`Created ${countryCode} (${item.countryName})`);
+  }
+
+  logger.info("Create completed successfully.");
+}
+
+/**
+ * READ / FETCH — reads back every country document currently stored in
+ * Firestore and prints a summary table.
+ *
+ * @returns {Promise<void>}
+ */
+async function fetchCountries() {
+  const { collectionRef } = await loadCountriesAndCollection();
+  const results = await fetchAllCollection(collectionRef);
+
+  const codes = results.map((doc) => doc.id);
+  logger.info('Full Collection as JSON:', JSON.stringify(results, null, 2));
+  logger.info(`Fetched ${results.length} countries from ${env.firestore.collectionPath.join("/")}:`);
+  logger.info("Country codes:", codes.join(", "));
+  logger.info("Displaying summary table (id, countryName, region, currencyCode, dialingCode):");
+  console.table(
+    results.map(({ id, countryName, region, currencyCode, dialingCode }) => ({
+      id,
+      countryName,
+      region,
+      currencyCode,
+      dialingCode,
+    }))
+  );
+}
+
+/**
+ * UPDATE — merges the `region` / `isActive` fields from `AllCountries.json`
+ * into each existing Firestore document (one `fetchAndUpdate` call per
+ * country). Only the given fields are touched; everything else already
+ * stored on the document is left as-is.
+ *
+ * @returns {Promise<void>}
+ */
+async function updateCountries() {
+  const { countries, collectionRef } = await loadCountriesAndCollection();
+  const codes = Object.keys(countries);
+  logger.info(`Updating ${codes.length} countries in ${env.firestore.collectionPath.join("/")}...`);
+
+  for (const countryCode of codes) {
+    const item = countries[countryCode];
+    const updates = { region: item.region, isActive: item.isActive };
+
+    const updated = await fetchAndUpdate(collectionRef, countryCode, updates);
+    logger.info(`Updated ${countryCode}:`, updated ? { region: updated.region } : "document not found");
+  }
+
+  logger.info("Update completed successfully.");
+}
+
+/**
+ * DELETE / CLEAR — recursively removes every document under the target
+ * collection.
+ *
+ * @returns {Promise<void>}
+ */
+async function clearCountries() {
+  logger.info(`Clearing ${env.firestore.collectionPath.join("/")}...`);
+  //const { db, collectionRef } = await loadCountriesAndCollection();
+  const { db, collectionRef } = await resolveCountriesCollection(env.firestore);
+
+  await clearCollection(db, collectionRef);
+  logger.info("Clear completed successfully.");
+}
+
+/** @type {Record<string, () => Promise<void>>} Command name -> handler. */
+const COMMANDS = {
+  create: createCountries,
+  fetch: fetchCountries,
+  update: updateCountries,
+  clear: clearCountries,
+};
+
+const command = (process.argv[2] || "").toLowerCase();
+const run = COMMANDS[command];
+
+if (!run) {
+  console.error(`\nUnknown or missing command: "${command}"`);
+  console.error("Usage: npm start <create|fetch|update|clear>\n");
+  process.exit(1);
+}
+
+run().catch((error) => {
+  logger.error(`"${command}" command failed:`, error);
+  process.exit(1);
+});

@@ -124,6 +124,7 @@ const COMMANDS = {
   fetch: fetchCountries,
   update: updateCountries,
   clear: clearCountries,
+  read: () => readCollection(env.firestore.databaseId, env.firestore.collectionPath[env.firestore.collectionPath.length - 1]),
 };
 
 const command = (process.argv[2] || "").toLowerCase();
@@ -139,3 +140,45 @@ run().catch((error) => {
   logger.error(`"${command}" command failed:`, error);
   process.exit(1);
 });
+
+// ----------------------------------------------
+//const { getFirestore } = require('firebase-admin/firestore'); // ReferenceError: require is not defined in ES module scope, you can use import instead
+import { getFirestore } from "firebase-admin/firestore";
+/**
+ * Reads all documents from a specified collection inside a given database.
+ *
+ * @param {string} dbIdOrName - The database ID (e.g., '(default)', 'org-database-id')
+ * @param {string} collectionName - The name of the collection to read
+ * @returns {Promise<Array<object>>} An array of documents containing IDs and data
+ */
+async function readCollection(dbIdOrName, collectionName) {
+  try {
+    // Check if we need the default database or a named database
+    const isDefault = !dbIdOrName || dbIdOrName === 'default' || dbIdOrName === '(default)';
+
+    const { db, collectionRef } = await resolveCountriesCollection(env.firestore);
+    // getFirestore() with no args targets '(default)', otherwise targets the named DB
+    //const db = isDefault ? getFirestore() : getFirestore(dbIdOrName);
+
+    // Fetch the collection
+    //const snapshot = await db.collection(collectionName).get();
+    const snapshot = await collectionRef.get();
+
+    if (snapshot.empty) {
+      console.log(`No documents found in ${collectionName} for database: ${dbIdOrName}`);
+      return [];
+    }
+
+    // Map the documents to a clean array of objects
+    const results = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    console.log(`Fetched ${results.length} documents from ${collectionName} in database: ${dbIdOrName}`);
+    console.log(`Full collection as JSON:`, JSON.stringify(results, null, 2));
+    return results;
+  } catch (error) {
+    console.error(`Error reading collection "${collectionName}" from database "${dbIdOrName}":`, error);
+    throw error;
+  }
+}

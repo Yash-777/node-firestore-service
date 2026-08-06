@@ -15,13 +15,14 @@
     "firebase",
     "firestore",
     "node",
-    "nosql"
+    "nosql",
+    "cross-env","dotenv","json5"
   ],
   "author": "Yashwanth",
-  "license": "Apache License V2.0",
+  "license": "Apache-2.0 license",
   "scripts": {
     "start:graphql": "npm run start --workspace=webmodule/graphql",
     "dev:graphql": "npm run dev --workspace=webmodule/graphql",
-    "import:countries": "npm run start --workspace=standalone/import-countries"
+    "standalone:import": "npm run start --workspace=standalone/import"
   }
 }

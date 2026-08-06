@@ -1,5 +1,5 @@
 {
-  "name": "node-firestore-service-import-countries",
+  "name": "node-firestore-service-import",
   "version": "1.0.0",
   "private": true,
   "type": "module",

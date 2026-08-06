@@ -9,7 +9,7 @@ import {
   fetchAndUpdate,
 } from "./importHelpers.js";
 
-const logger = createLogger("import-countries");
+const logger = createLogger("import");
 
 /**
  * Loads the shared `AllCountries.json` reference data and resolves the

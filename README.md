@@ -32,7 +32,7 @@ node-firestore-service/
         graphql/resolvers.js
         services/countryMasterService.js
   standalone/
-    import-countries/             node-firestore-service-import-countries
+    import/                       node-firestore-service-import
       src/
         importAllCountries.js     entrypoint: `node src/importAllCountries.js`
         importHelpers.js          Firestore + shared-JSON loading helpers
@@ -59,7 +59,7 @@ Change the collection or database anywhere without touching code.
 ## Install
 
 ```bash
-npm install        # installs all 3 workspaces (common, graphql, import-countries)
+npm install        # installs all 3 workspaces (common, graphql, import)
 ```
 
 Copy `.env.example` to `.env` at the repo root and fill in a Firebase
@@ -70,14 +70,14 @@ credential (`FIREBASE_SERVICE_ACCOUNT` or `FIREBASE_SERVICE_ACCOUNT_PATH`).
 ```bash
 #npm run start:graphql      # GraphQL API on http://localhost:4000/graphql
 #npm run dev:graphql        # same, with --watch
-#npm run import:countries   # runs the standalone Firestore import script
+#npm run standalone:import  # runs the standalone Firestore import script
 
-npm start --workspace=standalone\import-countries -- create
-npm start --workspace=standalone\import-countries -- fetch
-npm start --workspace=standalone\import-countries -- clear
+npm start --workspace=standalone\import -- create
+npm start --workspace=standalone\import -- fetch
+npm start --workspace=standalone\import -- clear
 
 npm start --workspace=webmodule\graphql
-cd standalone\import-countries && npm start create
+cd standalone\import && npm start create
 ```
 
 Or from inside either module folder directly: `npm start`.
@@ -108,7 +108,7 @@ This is the official administrative SDK for Firebase. You should use this packag
 
 ## To enable modern ES6 `import/export` syntax natively in Node.js, you need to add the `"type": "module"` field to your `package.json`.
 
-1. Option A: ES6 Modules (Modern import)
+1. Option A: **`ES6 Modules`** (Modern import)
 
 The `package.json` Configuration. Here is how you add it:
 
@@ -143,7 +143,21 @@ import { getDbStatus } from './db.js';
 console.log(getDbStatus());
 ```
 
-2. Option B: CommonJS (Standard Node.js require)
+When using ES-Module `type = module`. instead of `import` if you use `reqire` it leads to below error
+
+```js
+const { getFirestore } = require('firebase-admin/firestore');
+
+Error:
+    ReferenceError: require is not defined in ES module scope, you can use import instead
+This file is being treated as an ES module because it has a '.js' file extension and 'node-firestore-service\standalone\import\package.json' contains "type": "module". To treat it as a CommonJS script, rename it to use the '.cjs' file extension.
+    at file:///D:/node-firestore-service/standalone/import/src/importAllCountries.js:130:26
+    at ModuleJob.run (node:internal/modules/esm/module_job:303:25)
+at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:663:26)
+at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:99:5)
+```
+
+2. Option B: `CommonJS` (Standard `Node.js` require)
 
 Use this if `"type": "module" is not in your package.json`.
 
@@ -182,9 +196,9 @@ To resolve this issue and allow your configuration files to contain comments, yo
 
 Here are the two best, industry-standard ways to modify your code:
 
-> Option 1: Using strip-json-comments (Recommended & Lightweight)
+> Option 1: Using `strip-json-comments` (Recommended & Lightweight)
 
-The strip-json-comments library replaces single-line (`//`) and multi-line (`/* */`) comments with whitespace, allowing the JSON parser to run without throwing errors.
+The `strip-json-comments` library replaces single-line (`//`) and multi-line (`/* */`) comments with whitespace, allowing the JSON parser to run without throwing errors.
 
 First, install the package: `npm install strip-json-comments`
 Then, update your function to read the file as a raw string and parse it:
@@ -203,9 +217,9 @@ export async function loadCommonJsonFile(fileName) {
     return JSON.parse(stripJsonComments(rawText));
 }
 ```
-> Option 2: Using the json5 Library (More Robust)
+> Option 2: Using the **json5** Library (More Robust)
 
-If you also want to support features like trailing commas, single-quoted strings, or unquoted keys alongside comments, JSON5 is the perfect library.
+If you also want to support features like `trailing commas`, `single-quoted strings`, or `unquoted keys alongside comments`, **`JSON5`** is the perfect library.
 
 First, install the package: `npm install json5`
 

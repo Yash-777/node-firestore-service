@@ -5,8 +5,9 @@
 package-lock.json
 
 # dotenv environment variable files
-#.env
+#.env - Ignore local-only environment configurations (.env.local, .env.dev, ... )
 .env.*
+# Optional: If you want to commit public templates instead of real secrets
 !.env.example
 
 # Logs

@@ -19,6 +19,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "firebase-admin": "^13.7.0",
+    "cross-env": "^7.0.3",
     "json5": "^2.2.3"
   }
 }

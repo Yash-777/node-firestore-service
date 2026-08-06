@@ -6,8 +6,9 @@
   "description": "Apollo GraphQL API exposing country master data backed by Firestore, via a dynamic database/collection configuration.",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "start": "cross-env node src/index.js",
+    "start:local": "cross-env NODE_ENV=local node src/index.js",
+    "start:dev": "cross-env NODE_ENV=dev node --watch src/index.js"
   },
   "engines": {
     "node": ">=24.0.0"

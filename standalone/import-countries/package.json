@@ -6,7 +6,9 @@
   "description": "One-off/repeatable script that overrides Firestore country master data from the shared common/src/data/AllCountries.json reference file. Run with `npm start` or `node src/importAllCountries.js`.",
   "main": "src/importAllCountries.js",
   "scripts": {
-    "start": "node src/importAllCountries.js"
+    "start": "cross-env node src/importAllCountries.js",
+    "start:local": "cross-env NODE_ENV=local node src/importAllCountries.js",
+    "start:dev": "cross-env NODE_ENV=dev node src/importAllCountries.js"
   },
   "engines": {
     "node": ">=24.0.0"

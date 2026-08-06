@@ -1,4 +1,4 @@
-import { readEnv } from "@node-firestore-service/common";
+import { readEnv, firestore as commonFirestore } from "@node-firestore-service/common";
 
 /**
  * Resolved configuration for the GraphQL web module. Every value here is
@@ -27,13 +27,9 @@ export const env = {
     .split(",")
     .map((origin) => origin.trim()),
   firestore: {
-    // Dynamic Firestore database name (Firebase projects can host several
-    // named databases). Defaults to the project's default database.
-    databaseId: readEnv("FIRESTORE_DATABASE_ID", { default: "(default)" }),
-    // Dynamic collection path, e.g. "master_data/countries/items".
-    // Split on "/" so callers can pass it straight into resolveCollection().
-    collectionPath: readEnv("FIRESTORE_COUNTRY_COLLECTION_PATH", {
-      default: "master_data/countries/items",
-    }).split("/"),
+    databaseId: commonFirestore.databaseId,
+    collectionPath: commonFirestore.countryCollectionPath,
+    collectionMasterPath: commonFirestore.countryMasterCollectionPath,
+    dealerCollectionPath: commonFirestore.dealerCollectionPath,
   },
 };

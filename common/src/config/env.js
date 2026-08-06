@@ -88,3 +88,24 @@ export function readEnv(key, { required = false, default: fallback } = {}) {
 
   return value;
 }
+
+
+export const firestore = {
+  // Dynamic Firestore database name (Firebase projects can host several
+  // named databases). Defaults to the project's default database.
+  databaseId: readEnv("FIRESTORE_DATABASE_ID", { default: "(default)" }),
+
+  // Dynamic collection path, e.g. "master_data/countries/items".
+  // Split on "/" so callers can pass it straight into resolveCollection().
+  countryCollectionPath: readEnv("FIRESTORE_COUNTRY_COLLECTION_PATH", {
+    default: "master_data/countries/items",
+  }).split("/"),
+  // Dynamic collection path, e.g. FIRESTORE_COUNTRYMASTER_COLLECTION_PATH=master_data/countrymaster/items.
+  // Split on "/" so callers can pass it straight into resolveCollection().
+  countryMasterCollectionPath: readEnv("FIRESTORE_COUNTRYMASTER_COLLECTION_PATH", {
+    default: "master_data/country_master/items",
+  }).split("/"),
+  dealerCollectionPath: readEnv("FIRESTORE_DEALER_COLLECTION_PATH", {
+    default: "master_data/dealers/items",
+  }).split("/"),
+};

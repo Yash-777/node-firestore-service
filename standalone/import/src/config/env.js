@@ -1,4 +1,4 @@
-import { readEnv } from "@node-firestore-service/common";
+import { firestore as commonFirestore } from "@node-firestore-service/common";
 
 /**
  * Resolved configuration for the country import script. Mirrors the
@@ -15,9 +15,8 @@ import { readEnv } from "@node-firestore-service/common";
 /** @type {ImportEnv} */
 export const env = {
   firestore: {
-    databaseId: readEnv("FIRESTORE_DATABASE_ID", { default: "(default)" }),
-    collectionPath: readEnv("FIRESTORE_COUNTRY_COLLECTION_PATH", {
-      default: "master_data/countries/items",
-    }).split("/"),
+    databaseId: commonFirestore.databaseId,
+    collectionPath: commonFirestore.countryCollectionPath,
+    dealerCollectionPath: commonFirestore.dealerCollectionPath,
   },
 };

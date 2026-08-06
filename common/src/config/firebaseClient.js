@@ -65,3 +65,10 @@ export function resolveCollection(db, pathSegments) {
   }
   return db.collection(pathSegments.join("/"));
 }
+
+
+export async function resolveCollectionRef(databaseId, collectionPath) {
+  const db = await getDb({ databaseId: databaseId });
+  const collectionRef = resolveCollection(db, collectionPath);
+  return { db, collectionRef };
+}

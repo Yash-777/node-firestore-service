@@ -1,5 +1,11 @@
 import { collectionToList, docToObject } from "./firestoreHelper.js";
 
+export async function resolveCollectionRef(databaseId, collectionPath) {
+  const db = await getDb({ databaseId: databaseId });
+  const collectionRef = resolveCollection(db, collectionPath);
+  return { db, collectionRef };
+}
+
 /**
  * Deletes every document under a collection reference (recursive delete).
  *

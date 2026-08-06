@@ -1,8 +1,7 @@
-import { createLogger } from "@node-firestore-service/common";
+import {createLogger, resolveCollectionRef} from "@node-firestore-service/common";
 import { env } from "./config/env.js";
 import {
   loadCommonJsonFile,
-  resolveCountriesCollection,
   clearCollection,
   createCollection,
   fetchAllCollection,
@@ -23,7 +22,7 @@ const logger = createLogger("import");
  */
 async function loadCountriesAndCollection() {
   const countriesData = await loadCommonJsonFile("AllCountries.json");
-  const { db, collectionRef } = await resolveCountriesCollection(env.firestore);
+  const { db, collectionRef } = await resolveCollectionRef(env.firestore.databaseId, env.firestore.collectionPath);
   return { countries: countriesData.countryListItems ?? {}, db, collectionRef };
 }
 
@@ -64,7 +63,7 @@ async function fetchCountries() {
   const results = await fetchAllCollection(collectionRef);
 
   const codes = results.map((doc) => doc.id);
-  logger.info('Full Collection as JSON:', JSON.stringify(results, null, 2));
+  //logger.info('Full Collection as JSON:', JSON.stringify(results, null, 2));
   logger.info(`Fetched ${results.length} countries from ${env.firestore.collectionPath.join("/")}:`);
   logger.info("Country codes:", codes.join(", "));
   logger.info("Displaying summary table (id, countryName, region, currencyCode, dialingCode):");
@@ -112,7 +111,7 @@ async function updateCountries() {
 async function clearCountries() {
   logger.info(`Clearing ${env.firestore.collectionPath.join("/")}...`);
   //const { db, collectionRef } = await loadCountriesAndCollection();
-  const { db, collectionRef } = await resolveCountriesCollection(env.firestore);
+  const { db, collectionRef } = await resolveCollectionRef(env.firestore.databaseId, env.firestore.collectionPath);
 
   await clearCollection(db, collectionRef);
   logger.info("Clear completed successfully.");
@@ -156,7 +155,7 @@ async function readCollection(dbIdOrName, collectionName) {
     // Check if we need the default database or a named database
     const isDefault = !dbIdOrName || dbIdOrName === 'default' || dbIdOrName === '(default)';
 
-    const { db, collectionRef } = await resolveCountriesCollection(env.firestore);
+    const { db, collectionRef } = await resolveCollectionRef(env.firestore.databaseId, env.firestore.collectionPath);
     // getFirestore() with no args targets '(default)', otherwise targets the named DB
     //const db = isDefault ? getFirestore() : getFirestore(dbIdOrName);
 
@@ -175,7 +174,7 @@ async function readCollection(dbIdOrName, collectionName) {
       ...doc.data()
     }));
     console.log(`Fetched ${results.length} documents from ${collectionName} in database: ${dbIdOrName}`);
-    console.log(`Full collection as JSON:`, JSON.stringify(results, null, 2));
+    //console.log(`Full collection as JSON:`, JSON.stringify(results, null, 2));
     return results;
   } catch (error) {
     console.error(`Error reading collection "${collectionName}" from database "${dbIdOrName}":`, error);

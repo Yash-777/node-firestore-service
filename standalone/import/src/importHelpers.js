@@ -59,4 +59,4 @@ export async function resolveCountriesCollection(firestoreConfig) {
 // CRUD primitives (clearCollection, fetchAllCollection, createCollection,
 // fetchAndUpdate) now live in @node-firestore-service/common so both this
 // script and the GraphQL web module share one implementation.
-export { clearCollection, fetchAllCollection, createCollection, fetchAndUpdate } from "@node-firestore-service/common";
+export { clearCollection, fetchAllCollection, createCollection, fetchAndUpdate, resolveCollectionRef } from "@node-firestore-service/common";

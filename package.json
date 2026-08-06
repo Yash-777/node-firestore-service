@@ -9,7 +9,7 @@
   "workspaces": [
     "common",
     "webmodule/graphql",
-    "standalone/import-countries"
+    "standalone/import"
   ],
   "keywords": [
     "firebase",

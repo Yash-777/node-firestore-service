@@ -1,28 +1,25 @@
 {
-  "name": "node-firestore-service",
+  "name": "firebase-custom-importer",
   "version": "1.0.0",
-  "description": "A practice project for learning and executing Cloud Firestore operations",
+  "description": "CLI tool for Firebase operations",
   "private": true,
   "engines": {
     "node": ">=24.0.0"
   },
-  "workspaces": [
-    "common",
-    "webmodule/graphql",
-    "standalone/import"
-  ],
   "keywords": [
     "firebase",
     "firestore",
-    "node",
+    "node", "nodejs",
     "nosql",
-    "cross-env","dotenv","json5"
+    "cross-env","dotenv","json5",
+    "esm"
   ],
   "author": "Yashwanth",
   "license": "Apache-2.0 license",
-  "scripts": {
-    "start:graphql": "npm run start --workspace=webmodule/graphql",
-    "dev:graphql": "npm run dev --workspace=webmodule/graphql",
-    "standalone:import": "npm run start --workspace=standalone/import"
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^13.7.0",
+    "cross-env": "^7.0.3",
+    "json5": "^2.2.3"
   }
 }
